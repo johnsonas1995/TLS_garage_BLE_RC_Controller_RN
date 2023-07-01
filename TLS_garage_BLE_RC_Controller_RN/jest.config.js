@@ -1,3 +1,4 @@
+"use strict";
 module.exports = {
-  preset: 'react-native',
+    preset: 'react-native',
 };
