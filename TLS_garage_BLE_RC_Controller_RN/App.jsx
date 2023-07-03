@@ -93,6 +93,13 @@ const App: () => Node = () => {
       console.log('Discovered peripheral:', peripheral);
     });
 
+    bleManagerEmitter.addListener(
+        'BleManagerStopScan',
+        () => {
+            console.log("done")
+        }
+    )
+
     const startScan = async () => {
       
         try {
@@ -103,13 +110,11 @@ const App: () => Node = () => {
             ])
             console.log('Starting Scan')
             await BleManager.start()
-            const scannedDevices = await BleManager.scan([], 5, true, {
+            await BleManager.scan([], 5, true, {
               matchMode: BleScanMatchMode.Sticky,
               scanMode: BleScanMode.LowLatency,
               callbackType: BleScanCallbackType.AllMatches,
             })
-            console.log("devices", scannedDevices)
-            console.log(await BleManager.getDiscoveredPeripherals([]))
             BleManager.stopScan()
             
         } catch (e) {
