@@ -89,18 +89,29 @@ const App: () => Node = () => {
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
 
+    bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral) => {
+      console.log('Discovered peripheral:', peripheral);
+    });
+
     const startScan = async () => {
+      
         try {
             await PermissionsAndroid.requestMultiple([
                 PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
             ])
             console.log('Starting Scan')
             await BleManager.start()
-            console.log('starting scan')
-            const scannedDevices = await BleManager.scan([], 5, true)
-            console.log(scannedDevices)
+            const scannedDevices = await BleManager.scan([], 5, true, {
+              matchMode: BleScanMatchMode.Sticky,
+              scanMode: BleScanMode.LowLatency,
+              callbackType: BleScanCallbackType.AllMatches,
+            })
+            console.log("devices", scannedDevices)
+            console.log(await BleManager.getDiscoveredPeripherals([]))
             BleManager.stopScan()
+            
         } catch (e) {
             console.log(e)
         }
@@ -111,11 +122,11 @@ const App: () => Node = () => {
   
     return (
       <View style={styles.sectionContainer}>
-      <Pressable style={styles.scanButton} onPress={startScan}>
-          <Text style={styles.scanButtonText}>
-            {isScanning ? 'Scanning...' : 'Scan Bluetooth'}
-          </Text>
-      </Pressable>
+      <Button 
+        style={styles.scanButton} 
+        title="Scan" 
+        onPress={startScan}>
+      </Button>
       {/* <Image source={logo} style={{width:150, height:150, alignSelf:'center'}}/> */}
       
       <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
@@ -151,12 +162,14 @@ const App: () => Node = () => {
   
   const styles = StyleSheet.create({
     sectionContainer: {
-      marginTop: 150,
       paddingHorizontal: 24,
     },
     sectionTitle: {
       fontSize: 24,
       fontWeight: '600',
+    },
+    scanButton: {
+      alignSelf:'flex-start',
     },
     sectionDescription: {
       marginTop: 8,
