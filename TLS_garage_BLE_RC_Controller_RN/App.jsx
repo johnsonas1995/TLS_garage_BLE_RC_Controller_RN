@@ -1,6 +1,5 @@
 import React from 'react';
-import { useState } from 'react';    
-import type {Node} from 'react';
+import { useState } from 'react';
 
 import {
   SafeAreaView,
@@ -90,32 +89,11 @@ const App: () => Node = () => {
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
 
-    const startScan = () => {
-      if (!isScanning) {
-        // reset found peripherals before scan
-        // setPeripherals(new Map<Peripheral['id'], Peripheral>());
-    
-        try {
-          console.debug('[startScan] starting scan...');
-          console.log('[startScan] starting scan...');
-          setIsScanning(true);
-          BleManager.scan(SERVICE_UUIDS, SECONDS_TO_SCAN_FOR, ALLOW_DUPLICATES, {
-            matchMode: BleScanMatchMode.Sticky,
-            scanMode: BleScanMode.LowLatency,
-            callbackType: BleScanCallbackType.AllMatches,
-          })
-            .then(() => {
-              console.debug('[startScan] scan promise returned successfully.');
-              console.log('[startScan] scan promise returned successfully.');
-            })
-            .catch(err => {
-              console.error('[startScan] ble scan returned in error', err);
-            });
-        } catch (error) {
-          console.error('[startScan] ble scan error thrown', error);
-        }
-      }
-    };
+    const startScan = async () => {
+        const scannedDevices = await BleManager.scan([], 5, true)
+        console.log(scannedDevices)
+        BleManager.stopScan()
+    }
 
     
   
