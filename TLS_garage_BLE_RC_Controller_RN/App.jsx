@@ -61,7 +61,7 @@ const App: () => Node = () => {
   
   
     return (
-      <View style={styles.container}>
+      <View style={styles.sectionContainer}>
       {/* <Image source={logo} style={{width:150, height:150, alignSelf:'center'}}/> */}
       
       <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
@@ -97,7 +97,7 @@ const App: () => Node = () => {
   
   const styles = StyleSheet.create({
     sectionContainer: {
-      marginTop: 32,
+      marginTop: 150,
       paddingHorizontal: 24,
     },
     sectionTitle: {
