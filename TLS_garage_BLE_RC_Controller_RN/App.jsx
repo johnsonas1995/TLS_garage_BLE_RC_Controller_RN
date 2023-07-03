@@ -14,7 +14,32 @@ import {
   Button,
   Image,
   NativeModules, DeviceEventEmitter,
+  NativeEventEmitter,
+  Pressable
 } from 'react-native';
+
+import BleManager, {
+  BleDisconnectPeripheralEvent,
+  BleManagerDidUpdateValueForCharacteristicEvent,
+  BleScanCallbackType,
+  BleScanMatchMode,
+  BleScanMode,
+  Peripheral,
+} from 'react-native-ble-manager';
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
+
+const SECONDS_TO_SCAN_FOR = 7;
+const SERVICE_UUIDS: string[] = [];
+const ALLOW_DUPLICATES = true;
+
+// declare module 'react-native-ble-manager' {
+//   // enrich local contract with custom state properties needed by App.tsx
+//   interface Peripheral {
+//     connected?: boolean;
+//     connecting?: boolean;
+//   }
+// }
 
 import Slider from '@react-native-community/slider'
 
@@ -47,6 +72,8 @@ function Section({ children, title }) {
     </react_native_1.View>);
 }
 
+
+
 const App: () => Node = () => {
     const [throttleVal, setThrottleVal] = useState(0);
     const [steerVal, setSteerVal] = useState(0);
@@ -56,17 +83,55 @@ const App: () => Node = () => {
       setLights(current => !current)
       console.log("Lights:", lights)
     }
+    const [isScanning, setIsScanning] = useState(false);
+    const [peripherals, setPeripherals] = useState(
+      // new Map<Peripheral['id'], Peripheral>(),
+    );
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
+
+    const startScan = () => {
+      if (!isScanning) {
+        // reset found peripherals before scan
+        // setPeripherals(new Map<Peripheral['id'], Peripheral>());
+    
+        try {
+          console.debug('[startScan] starting scan...');
+          console.log('[startScan] starting scan...');
+          setIsScanning(true);
+          BleManager.scan(SERVICE_UUIDS, SECONDS_TO_SCAN_FOR, ALLOW_DUPLICATES, {
+            matchMode: BleScanMatchMode.Sticky,
+            scanMode: BleScanMode.LowLatency,
+            callbackType: BleScanCallbackType.AllMatches,
+          })
+            .then(() => {
+              console.debug('[startScan] scan promise returned successfully.');
+              console.log('[startScan] scan promise returned successfully.');
+            })
+            .catch(err => {
+              console.error('[startScan] ble scan returned in error', err);
+            });
+        } catch (error) {
+          console.error('[startScan] ble scan error thrown', error);
+        }
+      }
+    };
+
+    
   
   
     return (
       <View style={styles.sectionContainer}>
+      <Pressable style={styles.scanButton} onPress={startScan}>
+          <Text style={styles.scanButtonText}>
+            {isScanning ? 'Scanning...' : 'Scan Bluetooth'}
+          </Text>
+      </Pressable>
       {/* <Image source={logo} style={{width:150, height:150, alignSelf:'center'}}/> */}
       
       <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
   
-      <Slider style={{width:200, height:40, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}} //could use wheel picker instead
+      <Slider style={{width:200, height:70, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}} //could use wheel picker instead
         minimumValue={-10} 
         maximumValue={10}
         onValueChange={(value) => setThrottleVal(value)}
