@@ -2,20 +2,20 @@ import React from 'react';
 import { useState } from 'react';
 
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  PermissionsAndroid,
-  View,
-  Button,
-  Image,
-  NativeModules, DeviceEventEmitter,
-  NativeEventEmitter,
-  Pressable
-} from 'react-native';
+    SafeAreaView,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    useColorScheme,
+    PermissionsAndroid,
+    View,
+    Button,
+    Image,
+    NativeModules, DeviceEventEmitter,
+    NativeEventEmitter,
+    Pressable, Platform
+} from 'react-native'
 
 import BleManager, {
   BleDisconnectPeripheralEvent,
@@ -103,24 +103,35 @@ const App: () => Node = () => {
     const startScan = async () => {
       
         try {
-            await PermissionsAndroid.requestMultiple([
-                PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
-                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
-                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-            ])
+            if (Platform.OS === 'android') {
+                await PermissionsAndroid.requestMultiple([
+                    PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+                    PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT,
+                    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+                ])
+            }
             console.log('Starting Scan')
-            await BleManager.start()
+            await BleManager.start({showAlert: true})
+            let state = await BleManager.checkState()
+            while (state !== 'on') {
+                await delay(500)
+                state = await BleManager.checkState()
+                console.log(state)
+            }
+            console.log(state, 'fuck')
             await BleManager.scan([], 5, true, {
               matchMode: BleScanMatchMode.Sticky,
               scanMode: BleScanMode.LowLatency,
               callbackType: BleScanCallbackType.AllMatches,
             })
-            BleManager.stopScan()
+            // BleManager.stopScan()
             
         } catch (e) {
             console.log(e)
         }
     }
+
+    const delay = ms => new Promise(res => setTimeout(res, ms))
 
     
   
