@@ -90,9 +90,20 @@ const App: () => Node = () => {
     console.log("Steering:", steerVal)
 
     const startScan = async () => {
-        const scannedDevices = await BleManager.scan([], 5, true)
-        console.log(scannedDevices)
-        BleManager.stopScan()
+        try {
+            await PermissionsAndroid.requestMultiple([
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN,
+                PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+            ])
+            console.log('Starting Scan')
+            await BleManager.start()
+            console.log('starting scan')
+            const scannedDevices = await BleManager.scan([], 5, true)
+            console.log(scannedDevices)
+            BleManager.stopScan()
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     
