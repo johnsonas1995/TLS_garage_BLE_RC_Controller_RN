@@ -1,10 +1,23 @@
-"use strict";
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from 'react';
+import { useState } from 'react';    
+import type {Node} from 'react';
+
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  useColorScheme,
+  PermissionsAndroid,
+  View,
+  Button,
+  Image,
+  NativeModules, DeviceEventEmitter,
+} from 'react-native';
+
+import Slider from '@react-native-community/slider'
+
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,52 +46,72 @@ function Section({ children, title }) {
       </react_native_1.Text>
     </react_native_1.View>);
 }
-function App() {
-    const isDarkMode = (0, react_native_1.useColorScheme)() === 'dark';
-    const backgroundStyle = {
-        backgroundColor: isDarkMode ? NewAppScreen_1.Colors.darker : NewAppScreen_1.Colors.lighter,
-    };
-    return (<react_native_1.SafeAreaView style={backgroundStyle}>
-      <react_native_1.StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} backgroundColor={backgroundStyle.backgroundColor}/>
-      <react_native_1.ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
-        <NewAppScreen_1.Header />
-        <react_native_1.View style={{
-            backgroundColor: isDarkMode ? NewAppScreen_1.Colors.black : NewAppScreen_1.Colors.white,
-        }}>
-          <Section title="Step One">
-            Edit <react_native_1.Text style={styles.highlight}>App.tsx</react_native_1.Text> to change this
-            screen and then come back to see your edits.ssss
-          </Section>
-          <Section title="See Your Changes">
-            <NewAppScreen_1.ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <NewAppScreen_1.DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <NewAppScreen_1.LearnMoreLinks />
-        </react_native_1.View>
-      </react_native_1.ScrollView>
-    </react_native_1.SafeAreaView>);
-}
-const styles = react_native_1.StyleSheet.create({
+
+const App: () => Node = () => {
+    const [throttleVal, setThrottleVal] = useState(0);
+    const [steerVal, setSteerVal] = useState(0);
+    const [lights, setLights] = useState(false);
+    const [devices, setDevices] = useState([]);
+    const lightsHandler = () => {// need to add bt write function
+      setLights(current => !current)
+      console.log("Lights:", lights)
+    }
+    console.log("Speed:", throttleVal)
+    console.log("Steering:", steerVal)
+  
+  
+    return (
+      <View style={styles.container}>
+      {/* <Image source={logo} style={{width:150, height:150, alignSelf:'center'}}/> */}
+      
+      <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
+  
+      <Slider style={{width:200, height:40, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}} //could use wheel picker instead
+        minimumValue={-10} 
+        maximumValue={10}
+        onValueChange={(value) => setThrottleVal(value)}
+        step={1}
+        value={throttleVal}
+        />
+      
+        <Slider style={{width:200, height:40, alignSelf:'flex-end'}} //could use wheel picker instead
+        minimumValue={-1} 
+        maximumValue={1}
+        onValueChange={(value) => setSteerVal(value)}
+        step={1}
+        value={steerVal}
+        />
+  
+      <Text style={{alignSelf:'flex-end'}}>   Steering: {steerVal}   </Text>
+      <Button
+          onPress={lightsHandler}
+          title="Lights"
+          color="#40E0D0"
+          accessibilityLabel="Toggle Lights"
+        />
+        <StatusBar style="auto" />
+      </View>
+      
+    );
+  };
+  
+  const styles = StyleSheet.create({
     sectionContainer: {
-        marginTop: 32,
-        paddingHorizontal: 24,
+      marginTop: 32,
+      paddingHorizontal: 24,
     },
     sectionTitle: {
-        fontSize: 24,
-        fontWeight: '600',
+      fontSize: 24,
+      fontWeight: '600',
     },
     sectionDescription: {
-        marginTop: 8,
-        fontSize: 18,
-        fontWeight: '400',
+      marginTop: 8,
+      fontSize: 18,
+      fontWeight: '400',
     },
     highlight: {
-        fontWeight: '700',
+      fontWeight: '700',
     },
-});
-exports.default = App;
+  });
+  
+  export default App;
