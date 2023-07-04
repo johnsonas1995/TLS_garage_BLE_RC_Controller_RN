@@ -25,60 +25,18 @@ import BleManager, {
   BleScanMode,
   Peripheral,
 } from 'react-native-ble-manager';
-const BleManagerModule = NativeModules.BleManager;
-const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
-
-const SECONDS_TO_SCAN_FOR = 7;
-const SERVICE_UUIDS: string[] = [];
-const ALLOW_DUPLICATES = true;
-
-// declare module 'react-native-ble-manager' {
-//   // enrich local contract with custom state properties needed by App.tsx
-//   interface Peripheral {
-//     connected?: boolean;
-//     connecting?: boolean;
-//   }
-// }
 
 import Slider from '@react-native-community/slider'
 
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const react_1 = __importDefault(require("react"));
-const react_native_1 = require("react-native");
-const NewAppScreen_1 = require("react-native/Libraries/NewAppScreen");
-function Section({ children, title }) {
-    const isDarkMode = (0, react_native_1.useColorScheme)() === 'dark';
-    return (<react_native_1.View style={styles.sectionContainer}>
-      <react_native_1.Text style={[
-            styles.sectionTitle,
-            {
-                color: isDarkMode ? NewAppScreen_1.Colors.white : NewAppScreen_1.Colors.black,
-            },
-        ]}>
-        {title}
-      </react_native_1.Text>
-      <react_native_1.Text style={[
-            styles.sectionDescription,
-            {
-                color: isDarkMode ? NewAppScreen_1.Colors.light : NewAppScreen_1.Colors.dark,
-            },
-        ]}>
-        {children}
-      </react_native_1.Text>
-    </react_native_1.View>);
-}
-
-
+const BleManagerModule = NativeModules.BleManager;
+const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 const App: () => Node = () => {
     const [throttleVal, setThrottleVal] = useState(0);
     const [steerVal, setSteerVal] = useState(0);
     const [lights, setLights] = useState(false);
     const [devices, setDevices] = useState([]);
-    const lightsHandler = () => {// need to add bt write function
+    const lightsHandler = () => {
       setLights(current => !current)
       console.log("Lights:", lights)
     }
@@ -150,7 +108,7 @@ const App: () => Node = () => {
       
       <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
   
-      <Slider style={{width:200, height:70, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}} //could use wheel picker instead
+      <Slider style={{width:200, height:70, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}}
         minimumValue={-10} 
         maximumValue={10}
         onValueChange={(value) => setThrottleVal(value)}
@@ -158,7 +116,7 @@ const App: () => Node = () => {
         value={throttleVal}
         />
       
-        <Slider style={{width:200, height:40, alignSelf:'flex-end'}} //could use wheel picker instead
+        <Slider style={{width:200, height:40, alignSelf:'flex-end'}} 
         minimumValue={-1} 
         maximumValue={1}
         onValueChange={(value) => setSteerVal(value)}
