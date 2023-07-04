@@ -133,6 +133,9 @@ const App = () => {
         step={1}
         value={throttleVal}
       />
+      {peripheralState.length > 0 ?
+        <Text style={{alignSelf:'center'}}>This Will say "Connected"?</Text>
+        :<Text style={{alignSelf:'center'}}>Not Searching</Text>}
       
         
       <Slider style={{width:200, height:40, alignSelf:'flex-end'}} 
