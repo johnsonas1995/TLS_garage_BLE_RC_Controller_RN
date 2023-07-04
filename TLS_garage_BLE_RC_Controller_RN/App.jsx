@@ -65,7 +65,6 @@ const App = () => {
     )
 
     const startScan = async () => {
-      
         try {
             if (Platform.OS === 'android') {
                 await PermissionsAndroid.requestMultiple([
@@ -89,21 +88,29 @@ const App = () => {
               callbackType: BleScanCallbackType.AllMatches,
             })
             await delay(6000)
-            const sortedPeripherals = [...new Set(peripherals)].sort()
-            setPeripheralState(sortedPeripherals)
-            // console.log(peripheralState)
-            console.log('yeet')
-            // BleManager.stopScan()
-            
+            setPeripheralState(peripherals)
         } catch (e) {
             console.log(e)
         }
     }
 
+    const connectDevice = async () => {
+        const foundDevice = peripheralState.find(device => device.name === 'DSD TECH')
+        console.log(foundDevice)
+        if (foundDevice) {
+            try {
+                await BleManager.connect(foundDevice.id)
+                console.log('Connected!')
+            } catch (e) {
+
+            }
+        }
+    }
     const delay = ms => new Promise(res => setTimeout(res, ms))
 
     useEffect(() => {
-      console.log("effect", peripheralState)
+        console.log("effect", peripheralState)
+        if (peripheralState.length > 0) connectDevice()
     }, [peripheralState])
 
     return (
