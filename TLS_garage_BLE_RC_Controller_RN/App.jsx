@@ -83,20 +83,24 @@ const App: () => Node = () => {
       console.log("Lights:", lights)
     }
     const [isScanning, setIsScanning] = useState(false);
-    const [peripherals, setPeripherals] = useState(
-      // new Map<Peripheral['id'], Peripheral>(),
-    );
+    const [peripheralState, setPeripheralState] = useState([])
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
 
+    const peripherals = []
     bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral) => {
-      console.log('Discovered peripheral:', peripheral);
+        console.log('Discovered peripheral:', peripheral.name)
+        peripherals.push(peripheral.name)
     });
 
     bleManagerEmitter.addListener(
         'BleManagerStopScan',
         () => {
             console.log("done")
+            console.log(peripherals)
+            const sortedPeripherals = [...new Set(peripherals)].sort()
+            setPeripheralState(sortedPeripherals)
+            console.log(peripheralState)
         }
     )
 
@@ -124,6 +128,8 @@ const App: () => Node = () => {
               scanMode: BleScanMode.LowLatency,
               callbackType: BleScanCallbackType.AllMatches,
             })
+            await delay(6000)
+            console.log('yeet')
             // BleManager.stopScan()
             
         } catch (e) {
@@ -133,9 +139,6 @@ const App: () => Node = () => {
 
     const delay = ms => new Promise(res => setTimeout(res, ms))
 
-    
-  
-  
     return (
       <View style={styles.sectionContainer}>
       <Button 
