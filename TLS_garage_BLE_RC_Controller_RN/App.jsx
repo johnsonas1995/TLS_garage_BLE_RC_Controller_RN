@@ -102,13 +102,14 @@ const App: () => Node = () => {
       <Button 
         style={styles.scanButton} 
         title="Scan" 
+        color="#40E0D0"
         onPress={startScan}>
       </Button>
       {/* <Image source={logo} style={{width:150, height:150, alignSelf:'center'}}/> */}
       
-      <Text style={{alignSelf:'flex-start'}}>   Speed: {throttleVal}</Text>
+      <Text style={{alignSelf:'flex-start', marginTop: 25}}>   Speed: {throttleVal}</Text>
   
-      <Slider style={{width:200, height:70, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start'}}
+      <Slider style={{width:200, height:70, transform: [ { rotate: "-90deg" } ], alignSelf:'flex-start', marginTop: 75}}
         minimumValue={-10} 
         maximumValue={10}
         onValueChange={(value) => setThrottleVal(value)}
@@ -127,6 +128,7 @@ const App: () => Node = () => {
       <Text style={{alignSelf:'flex-end'}}>   Steering: {steerVal}   </Text>
       <Button
           onPress={lightsHandler}
+          style={styles.scanButton} 
           title="Lights"
           color="#40E0D0"
           accessibilityLabel="Toggle Lights"
@@ -146,7 +148,11 @@ const App: () => Node = () => {
       fontWeight: '600',
     },
     scanButton: {
+      marginTop: 20,
       alignSelf:'flex-start',
+    },
+    lightsButton: {
+      marginTop: 40,
     },
     sectionDescription: {
       marginTop: 8,
