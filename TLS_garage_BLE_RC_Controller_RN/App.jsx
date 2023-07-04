@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import {
     SafeAreaView,
@@ -45,20 +45,21 @@ const App: () => Node = () => {
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
 
+    
+
     const peripherals = []
     bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral) => {
         console.log('Discovered peripheral:', peripheral.name)
-        peripherals.push(peripheral.name)
+        if (peripheral.name){
+          peripherals.push(peripheral.name)
+        }
     });
 
     bleManagerEmitter.addListener(
         'BleManagerStopScan',
         () => {
             console.log("done")
-            console.log(peripherals)
-            const sortedPeripherals = [...new Set(peripherals)].sort()
-            setPeripheralState(sortedPeripherals)
-            console.log(peripheralState)
+            // console.log(peripherals)
         }
     )
 
@@ -87,6 +88,9 @@ const App: () => Node = () => {
               callbackType: BleScanCallbackType.AllMatches,
             })
             await delay(6000)
+            const sortedPeripherals = [...new Set(peripherals)].sort()
+            setPeripheralState(sortedPeripherals)
+            // console.log(peripheralState)
             console.log('yeet')
             // BleManager.stopScan()
             
@@ -96,6 +100,10 @@ const App: () => Node = () => {
     }
 
     const delay = ms => new Promise(res => setTimeout(res, ms))
+
+    useEffect(() => {
+      console.log("effect", peripheralState)
+    }, [peripheralState])
 
     return (
       <View style={styles.sectionContainer}>
@@ -115,15 +123,16 @@ const App: () => Node = () => {
         onValueChange={(value) => setThrottleVal(value)}
         step={1}
         value={throttleVal}
-        />
-      
-        <Slider style={{width:200, height:40, alignSelf:'flex-end'}} 
+      />
+        
+      <Slider style={{width:200, height:40, alignSelf:'flex-end'}} 
         minimumValue={-1} 
         maximumValue={1}
         onValueChange={(value) => setSteerVal(value)}
         step={1}
         value={steerVal}
-        />
+      />
+      
   
       <Text style={{alignSelf:'flex-end'}}>   Steering: {steerVal}   </Text>
       <Button
@@ -133,6 +142,9 @@ const App: () => Node = () => {
           color="#40E0D0"
           accessibilityLabel="Toggle Lights"
         />
+        {peripheralState.length > 0 ?
+        <Text>yep</Text>
+        :""}
         <StatusBar style="auto" />
       </View>
       
