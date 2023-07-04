@@ -31,7 +31,7 @@ import Slider from '@react-native-community/slider'
 const BleManagerModule = NativeModules.BleManager;
 const bleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
-const App: () => Node = () => {
+const App = () => {
     const [throttleVal, setThrottleVal] = useState(0);
     const [steerVal, setSteerVal] = useState(0);
     const [lights, setLights] = useState(false);
@@ -45,13 +45,14 @@ const App: () => Node = () => {
     console.log("Speed:", throttleVal)
     console.log("Steering:", steerVal)
 
-    
-
     const peripherals = []
     bleManagerEmitter.addListener('BleManagerDiscoverPeripheral', (peripheral) => {
         console.log('Discovered peripheral:', peripheral.name)
         if (peripheral.name){
-          peripherals.push(peripheral.name)
+          const existingPeripheral = peripherals.find(item => item.id === peripheral.id);
+          if(!existingPeripheral){
+            peripherals.push({name:peripheral.name, id:peripheral.id})
+          }
         }
     });
 
@@ -107,6 +108,7 @@ const App: () => Node = () => {
 
     return (
       <View style={styles.sectionContainer}>
+      
       <Button 
         style={styles.scanButton} 
         title="Scan" 
@@ -124,6 +126,7 @@ const App: () => Node = () => {
         step={1}
         value={throttleVal}
       />
+      
         
       <Slider style={{width:200, height:40, alignSelf:'flex-end'}} 
         minimumValue={-1} 
@@ -133,7 +136,6 @@ const App: () => Node = () => {
         value={steerVal}
       />
       
-  
       <Text style={{alignSelf:'flex-end'}}>   Steering: {steerVal}   </Text>
       <Button
           onPress={lightsHandler}
@@ -142,9 +144,7 @@ const App: () => Node = () => {
           color="#40E0D0"
           accessibilityLabel="Toggle Lights"
         />
-        {peripheralState.length > 0 ?
-        <Text>yep</Text>
-        :""}
+        
         <StatusBar style="auto" />
       </View>
       
