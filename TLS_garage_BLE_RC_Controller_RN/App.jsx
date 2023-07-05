@@ -1,5 +1,6 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
+import { Buffer } from 'buffer'
 
 import {
     SafeAreaView,
@@ -82,7 +83,7 @@ const App = () => {
                 console.log(state)
             }
             console.log(state, 'fuck')
-            await BleManager.scan([], 5, true, {
+            await BleManager.scan([], 2, true, {
               matchMode: BleScanMatchMode.Sticky,
               scanMode: BleScanMode.LowLatency,
               callbackType: BleScanCallbackType.AllMatches,
@@ -101,8 +102,13 @@ const App = () => {
             try {
                 await BleManager.connect(foundDevice.id)
                 console.log('Connected!')
+                const info = await BleManager.retrieveServices(foundDevice.id)
+                console.log('Services retrieved', info)
+                const buffer = Buffer.from('N')
+                await BleManager.writeWithoutResponse(foundDevice.id, 'ffe0', 'ffe1', buffer.toJSON().data)
+                console.log('Wrote', buffer, buffer.toJSON().data)
             } catch (e) {
-
+                console.log(e)
             }
         }
     }
